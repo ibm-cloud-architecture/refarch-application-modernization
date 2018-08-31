@@ -1,0 +1,48 @@
+<server description="new server">
+
+  <!-- Enable features -->
+  <featureManager>
+    <feature>jsp-2.3</feature>
+    <feature>jndi-1.0</feature>
+    <feature>mdb-3.2</feature>
+    <feature>wmqJmsClient-2.0</feature>
+	  <feature>servlet-3.1</feature>
+    <feature>cdi-1.2</feature>
+    <feature>localConnector-1.0</feature>
+    <feature>ejbLite-3.2</feature>
+  </featureManager>
+  
+
+  <authData id="auth1" password="passw0rd" user="admin"/>  
+
+  <variable name="wmqJmsClient.rar.location" value="/opt/ibm/wlp/usr/shared/resources/mq/wmq.jmsra.rar"/>
+  
+  <jmsConnectionFactory jndiName="jms/replyCF" connectionManagerRef="jms/replyCF" containerAuthDataRef="auth1">
+    <properties.wmqJms channel="DEV.ADMIN.SVRCONN" connectionNameList="192.168.2.12(1414)" queueManager="QMGR0" transportType="CLIENT" clientId="" providerVersion="7"/>
+  </jmsConnectionFactory>
+  
+  <connectionManager id="jms/replyCF" maxPoolSize="20"/>
+  
+  <jmsQueue id="jms/INQ" jndiName="jms/INQ">
+    <properties.wmqJms baseQueueManagerName="QMGR0" baseQueueName="DEV.QUEUE.1" priority="QDEF" putAsyncAllowed="DISABLED"/>
+  </jmsQueue>
+  <jmsQueue id="jms/REPLYQ" jndiName="jms/REPLYQ">
+    <properties.wmqJms baseQueueManagerName="QMGR0" baseQueueName="DEV.QUEUE.2" priority="QDEF" putAsyncAllowed="DISABLED"/>
+  </jmsQueue>
+  
+
+  <jmsActivationSpec id="MQLibertyConversionApp/ProcessPayment" authDataRef="auth1">
+    <properties.wmqJms destinationRef="jms/INQ" destinationType="javax.jms.Queue" channel="DEV.ADMIN.SVRCONN" connectionNameList="192.168.2.12(1414)" queueManager="QMGR0" clientId="" transportType="CLIENT" maxPoolDepth="12" sharedSubscription="true"/>
+  </jmsActivationSpec>
+
+
+  <wmqJmsClient nativeLibraryPath="C:\Program Files\IBM\MQ\java\lib" reconnectionRetryInterval="1000" reconnectionRetryCount="1000"/>
+  
+  <webApplication id="MQLibertyConversionApp" name="MQLibertyConversionApp" location="MQLibertyConversionApp.war"/>
+
+  <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
+  <httpEndpoint id="defaultHttpEndpoint" httpPort="9080" httpsPort="9443" host="localhost"/>
+
+  <applicationMonitor updateTrigger="mbean"/>
+  
+</server>

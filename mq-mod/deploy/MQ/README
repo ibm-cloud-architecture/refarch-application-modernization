@@ -1,0 +1,2 @@
+docker build -t mq9-server-admin .
+docker run --env LICENSE=accept --env MQ_QMGR_NAME=QMGR0 --publish 1414:1414 --detach --hostname mqhost1 --name mqserver1 mq9-server-admin
